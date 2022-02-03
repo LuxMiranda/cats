@@ -12,18 +12,13 @@ class Infix:
     def __call__(self, value1, value2):
         return self.function(value1, value2)
 
-def id(*x):
-    return x
+def id(f):
+    return f
 
 def _after(girl,friend):
     return lambda *x : girl(friend(*x))
 
 after = Infix(_after)
-
-
-"""
-"""
-
 
 def f(x,y):
     return x + y
@@ -32,4 +27,9 @@ def g(x):
     return x * 2
 
 
-print(id(3))
+h = g |after| f
+
+print(h(1,1))
+
+## Output:
+## 4
