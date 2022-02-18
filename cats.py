@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Callable, Generic, TypeVar, Union
+from functools import singledispatch
 
 # Class to create infix operators
 class Infix:
@@ -58,6 +59,8 @@ def id(f):
 def o(girl, friend):
     return lambda *x : girl(friend(*x)) 
 
+# Memoization
+# Equivalent to functool's @cache 
 def memoize(f):
     cache = {}
     def memoizedF(*x):
@@ -66,3 +69,46 @@ def memoize(f):
             cache[argkey] = f(*x)
         return cache[argkey]
     return memoizedF
+
+
+@singledispatch
+def mempty(a):
+    raise Exception('Not implemented for {}'.format(type(a)))
+
+@singledispatch
+def mappend(a, b):
+    raise Exception('Not implemented for {}'.format(type(a)))
+
+@mempty.register(str)
+def _(a):
+    return ''
+
+@mappend.register(str)
+def _(a,b):
+    return a + b
+
+class Writer:
+    def __init__(self, first, second):
+        self.first  = first
+        self.second = second
+    def __str__(self):
+        return 'Writer({},{})'.format(self.first,self.second)
+
+@Infix
+def w(m1, m2):
+    def inner(*x):
+        p1 = m1(*x)
+        p2 = m2(p1.first)
+        return Writer(p2.first, mappend(p1.second,p2.second))
+    return inner
+
+def negate(b):
+    return Writer(not b, 'Not so! ')
+
+def isEven(n):
+    return Writer(n % 2 == 0, 'isEven ')
+
+isOdd = isEven |w| negate
+
+print(isOdd(20))
+
