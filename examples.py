@@ -13,7 +13,7 @@ def isEven(n):
 isOdd = negate |rk| isEven
 
 print(isOdd(4))
-
+# Output: Writer(False, isEven Not so! )
 
 # Currying
 
@@ -28,3 +28,4 @@ def multEm(a,b,c):
 mult10add9 = addEm(4,5) |o| multEm(1,10)
 
 print(mult10add9(6))
+# Output: 69
